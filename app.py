@@ -10,7 +10,7 @@ from datetime import datetime
 
 from config import DevelopmentConfig
 
- 
+
 app = Flask(__name__)
 app.config.from_object(DevelopmentConfig)
 csrf=CSRFProtect()
@@ -65,7 +65,7 @@ def index():
                         print(msg)
                         return render_template("index.html", form=user_form, msg=msg)
                     else:
-                         # Si ha pasado el tiempo de bloqueo, desbloquea la cuenta usando el procedimiento almacenado
+                        # Si ha pasado el tiempo de bloqueo, desbloquea la cuenta usando el procedimiento almacenado
                         cur.callproc('ToggleUserLock', (username, False))
                         mysql.connection.commit()
                 db_password = user_data['admin_password']

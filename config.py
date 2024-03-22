@@ -7,7 +7,7 @@ class Config(object):
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    port = 5000
+    port = 5500
     SECRET_KEY = "miLlave"
     MYSQL_HOST = 'localhost'
     # MYSQL_USER = 'seguridadUser'
