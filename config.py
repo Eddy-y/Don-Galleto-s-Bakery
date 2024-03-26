@@ -1,21 +1,14 @@
+
 import os
+from sqlalchemy import create_engine
 import urllib
 
 class Config(object):
-    SECRET_KEY = 'Clave_nueva'
-    SESSION_COOKIE_SECURE = True
+    SECRET_KEY='Clave_Nueva'
+    SESSION_COOKIE_SECURE=False
 
 class DevelopmentConfig(Config):
-    DEBUG = True
-    port = 5500
-    SECRET_KEY = "miLlave"
-    MYSQL_HOST = 'localhost'
-    # MYSQL_USER = 'seguridadUser'
-    # MYSQL_PASSWORD = 'V1ct0rG4y'
-    MYSQL_USER = 'root'
-    MYSQL_PASSWORD = '1234'
-    MYSQL_DB = 'testingdb'
-    MYSQL_CURSORCLASS = 'DictCursor'
-    MAX_FAILED_ATTEMPTS = 3
-    TIME_TO_UNLOCK = 20
+    DEBUG=True
+    SQLALCHEMY_DATABASE_URI='mysql+pymysql://root:root1234@127.0.0.1/cookiesInc'
+    SQLALCHEMY_TRACK_MODIFICATIONS=False
 

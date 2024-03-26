@@ -1,23 +1,19 @@
 {%macro render_field(field)%}
 <td>{{field.label}}</td>
 <dd>{{field(**kwargs)|safe}}</dd>
-{%endmacro%}
-
-{% macro render_field_style(field) %}
-  <div class="form-outline form-white mb-4">
-    {{ field(class_="form-control form-control-lg") }}
-    <label class="form-label" for="{{ field.id }}">{{ field.label }}</label>
-  </div>
-  {%if field.errors%}
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          html: "<ul>{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>"
-        });
-      });
-  </script>
-  {%endif%}
-{% endmacro %}
-
+{%endmacro%} {% macro render_field_style(field) %}
+<div class="form-outline form-white mb-4">
+  {{ field(class_="form-control form-control-lg") }}
+  <label class="form-label" for="{{ field.id }}">{{ field.label }}</label>
+</div>
+{%if field.errors%}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      html: "<ul>{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>",
+    });
+  });
+</script>
+{%endif%} {% endmacro %}
