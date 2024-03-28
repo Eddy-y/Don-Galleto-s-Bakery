@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' href='../static/css/styleGabo.css'>
+    <script src='main.js'></script>
+</head>
+<body>
+    <div class="container">
+        <div class="navigation">
+            <ul>
+                <li>
+                    <a href="#">
+                        <span class="icon"><ion-icon name="logo-apple"></ion-icon></span>
+                        <span class="title">Brand Name</span>
+                    </a>
+                </li>                
+                <li>
+                    <a href="#">
+                        <span class="icon"><ion-icon name="home-outline"></ion-icon></ion-icon></span>
+                        <span class="title">Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <span class="icon"><ion-icon name="person-outline"></ion-icon></span>
+                        <span class="title">Customers</span>
+                    </a>
+                </li> 
+                <li>
+                    <a href="#">
+                        <span class="icon"><ion-icon name="chatbox-outline"></ion-icon></span>
+                        <span class="title">Message</span>
+                    </a>
+                </li> 
+                <li>
+                    <a href="#">
+                        <span class="icon"><ion-icon name="help-outline"></ion-icon></span>
+                        <span class="title">Help</span>
+                    </a>
+                </li> 
+                <li>
+                    <a href="#">
+                        <span class="icon"><ion-icon name="settings-outline"></ion-icon></span>
+                        <span class="title">Settings</span>
+                    </a>
+                </li> 
+                <li>
+                    <a href="#">
+                        <span class="icon"><ion-icon name="lock-closed-outline"></ion-icon></span>
+                        <span class="title">Password</span>
+                    </a>
+                </li>   
+                <li>
+                    <a href="#">
+                        <span class="icon"><ion-icon name="log-out-outline"></ion-icon></span>
+                        <span class="title">Sign Out</span>
+                    </a>
+                </li>                                                                                             
+            </ul>
+        </div>
+        <!--Main-->
+        <div class="main">
+            <div class="topbar">
+                <div class="toggle">
+                    <ion-icon name="menu-outline"></ion-icon>
+                </div>
+                 <!--Search-->
+                <div class="search">
+                    <label>
+                        <input type="text" placeholder="Search Here">
+                        <ion-icon name="search-outline"></ion-icon>
+                    </label>
+                </div>
+                 <!--UserImg-->
+                 <div class="user">
+                    <img src="Images/User2.png">
+                 </div>
+            </div>
+
+            <!--cards-->
+            <div class="cardBox">
+                <div class="card">
+                    <div>
+                        <div class="numbers">${{totalVentas}}</div>
+                        <div class="cardName">Revenue</div>
+                    </div>
+                    <div class="iconBx">
+                        <ion-icon name="cash-outline"></ion-icon>
+                    </div>
+                </div>
+                <div class="card">
+                    <div>
+                        <div class="numbers">{{cantidadVentas}}</div>
+                        <div class="cardName">Sales</div>
+                    </div>
+                    <div class="iconBx">
+                        <ion-icon name="cart-outline"></ion-icon>
+                    </div>
+                </div>
+                <div class="card">
+                    <div>
+                        <div class="numbers">{{productoVendido}}</div>
+                        <div class="cardName">Selled the most</div>
+                    </div>
+                    <div class="iconBx">
+                        <ion-icon name="analytics-outline"></ion-icon>
+                    </div>
+                </div>   
+                <div class="card">
+                    <div>
+                        <div class="numbers">{{caducidades}}</div>
+                        <div class="cardName">Productos en riesgo (caducidad)</div>
+                        
+                    </div>
+                    <div class="iconBx">
+                        <!-- <ion-icon name="cash-outline"></ion-icon> -->
+                        <ion-icon name="alert-circle-outline"></ion-icon>
+                    </div>
+                </div>                                                              
+            </div>
+            <!--Add charts-->
+            <div class="graphBox">
+                
+                <div class="box">
+                    <!-- Select element for choosing a month -->
+                    <select id="monthSelect">
+                        <option value="1">January</option>
+                        <option value="2">February</option>
+                        <option value="3">March</option>
+                        <option value="4">April</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">August</option>
+                        <option value="9">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                    <canvas id="myChart"></canvas>
+                </div>
+                <div class="box">
+                    <canvas id="earning"></canvas>
+                </div>
+            </div>
+
+
+            <div class="details">
+                <!-- order details list -->
+                <div class="recentOrders">
+                    <div class="cardHeader">
+                        <h2>Recent Orders</h2>
+                        <a href="#" class="btn">View All</a>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <td>VentaID</td>
+                                <td>ClienteID</td>
+                                <td>Folio</td>
+                                <td>Fecha</td>
+                                <td>Total</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for venta in ventas %}
+                            <tr>
+                                <td>{{ venta.Id_Venta }}</td>
+                                <td>{{ venta.Cliente_ID }}</td>
+                                <td>{{ venta.Folio_Venta }}</td>
+                                <td>{{ venta.Fecha_Venta }}</td>
+                                <td>{{ venta.Total_Venta }}</td>
+                                
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- New Customers -->
+                <div class="recentCustomers">
+                    <div class="cardHeader">
+                        <h2>Caducidades Productos</h2>
+                    </div>
+                    <table>
+                        {% for prod in productos %}
+                        <tr>
+                            <td><h4>ID: {{prod.Id_Producto}}</h4></td>
+                            <!-- <td><div class="imgBx"><img src="Images/User2.png"></div></td> -->
+                            <td><h4>{{prod.Nombre_Producto}} <br><span>Caduca en: {{prod.Dias_Caducidad}} dias</span></h4></td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+            <div class="recentCustomers">
+                <!-- order details list -->
+                <div class="recentOrders">
+                    <div class="cardHeader">
+                        <h2>En produccion</h2>
+                        <!-- <a href="#" class="btn">View All</a> -->
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <td>Folio Produccion</td>
+                                <td>Cantidad Produccion</td>
+                                <td>Costo Produccion</td>
+                                <td>Nombre Producto</td>
+                                <td>Costo Producto</td>
+                                <td>Fecha de inicio de produccion</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pro in produccion %}
+                            <tr>
+                                <td>{{ pro.folio }}</td>
+                                <td>{{ pro.cantidad }}</td>
+                                <td>{{ pro.costo }}</td>
+                                <td>{{ pro.nombre }}</td>
+                                <td>{{ pro.costoPr }}</td>
+                                <td>{{ pro.fechaInicio }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>   
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+    <script src="../static/js/my_chart.js"></script>
+
+    <script>
+
+        //Menu toggle (alternar)
+        let toggle = document.querySelector('.toggle');
+        let navigation = document.querySelector('.navigation');
+        let main = document.querySelector('.main');
+
+        toggle.onclick = function()
+        {
+            navigation.classList.toggle('active');
+            main.classList.toggle('active');
+        }
+
+        //agregar clase hovered en el elemento de lista seleccionado
+        let list = document.querySelectorAll('.navigation li');
+        function activeLink(){
+            list.forEach((item) =>
+            item.classList.remove('hovered'));
+            this.classList.add('hovered')
+        }
+        list.forEach((item)=>
+        item.addEventListener('mouseover',activeLink));
+
+    </script> 
+</body>
+</html>

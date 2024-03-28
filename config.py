@@ -14,7 +14,7 @@ class DevelopmentConfig(Config):
     # MYSQL_PASSWORD = 'V1ct0rG4y'
     MYSQL_USER = 'root'
     MYSQL_PASSWORD = '1234'
-    MYSQL_DB = 'testingdb'
+    MYSQL_DB = 'cookiesInc'
     MYSQL_CURSORCLASS = 'DictCursor'
     MAX_FAILED_ATTEMPTS = 3
     TIME_TO_UNLOCK = 20

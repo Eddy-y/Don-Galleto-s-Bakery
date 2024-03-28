@@ -1,0 +1,42 @@
+{%extends 'ContenedorMain/contenedorMain.html' %}
+
+{%block content %}
+
+<div class="row">
+    <div class="col-4 ">
+        <h1 class="text-center">Produccion</h1>
+    </div>
+</div>
+<div class="row">
+    <form action="/produccion" method="post">
+        <table class="table table-bordered table-striped custom-table">
+            <thead class="text-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Galleta</th>
+                    <th>Cantidad en venta</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">1</th>
+                    <td>Galleta 1</td>
+                    <td>150 cajas/granel</td>
+                    <td><button type="submit" name="action" value="Producir" class="btn btn-secondary">Producir</button>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">2</th>
+                    <td>Galleta 2</td>
+                    <td>70 cajas/granel</td>
+                    <td><button type="submit" name="action" value="Producir" class="btn btn-secondary">Producir</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+
+
+{%endblock%}

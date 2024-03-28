@@ -1,0 +1,30 @@
+{% macro search_input(placeholder_text) %}
+<div class="search-container">
+    <input type="text" placeholder="Buscar {{placeholder_text}}">
+    <i class="fas fa-search fa-icon"></i>
+</div>
+{% endmacro %}
+
+{% macro input_custom(field) %}
+<div class="input-container mb-5">
+    <div class="row">
+        <div class="col md-12">
+            <td> {{ field(**kwargs) | safe }}</td>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col md-12" style="align-items: center;">
+            <label style="text-align: center;">{{field.label}}</label>
+        </div>
+    </div>
+</div>
+{%if field.errors%}
+<ul>
+        {%for error in field.errors%}
+        <li style="color: red;">{{error}}</li>
+        {%endfor%}
+</ul>
+{%endif%}
+{% endmacro %}
+
+
