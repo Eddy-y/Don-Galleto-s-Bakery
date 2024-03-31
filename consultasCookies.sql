@@ -59,10 +59,11 @@ SELECT prod.nombre_producto as nombre, pi.costo as costo, pi.costo as costo, p.f
     
 	
     
+    select inv.id_inventario as idInv, p.id_producto as idPro, p.nombre_producto as nombre, inv.cantidad_inv as cantidad
+    from inventario inv join producto p on inv.producto_inv = p.id_producto where p.id_producto not in (select pi.productoid_itm from produccionitem pi join produccion p ON p.id_produccionitem = pi.id_produccionitem where p.fecha_fin is null);
     
-    
-    
-    
+    select pi.productoid_itm from produccionitem pi join produccion p ON p.id_produccionitem = pi.id_produccionitem where p.fecha_fin is null;
+	
     
 SELECT
     TABLE_NAME,
