@@ -20,7 +20,7 @@ render_field%}
   {%with messages = get_flashed_messages()%} {%if messages%}
   <br />
   {%for message in messages %}
-  <div class="alert alert-success alert-dismissible" role="alert">
+  <div class="alert {{alert}} alert-dismissible" role="alert">
     <strong>{{message}}</strong>
     <button
       type="button"

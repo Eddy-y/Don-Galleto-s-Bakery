@@ -67,6 +67,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
           <ul class="navbar-nav">
+            {% if current_user.tipousuario == 'ejecVentas' %}
             <li class="nav-item">
               <a
                 id="users"
@@ -79,13 +80,19 @@
               <span class="material-symbols-outlined"> group_add </span>
             </li>
             <li class="nav-item">
-              <a class="nav-link" style="color: aliceblue" href="#"
+              <a
+                class="nav-link"
+                style="color: aliceblue"
+                href="/pagePrincipal/proveedor"
                 >Proveedores</a
               >
               <span class="material-symbols-outlined">
                 supervisor_account
               </span>
             </li>
+
+            {% endif %}
+
             <li class="nav-item">
               <a class="nav-link" style="color: aliceblue" href="#">Compras</a>
               <span class="material-symbols-outlined">
@@ -129,7 +136,11 @@
               </a>
               <span class="material-symbols-outlined"> currency_exchange </span>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li>
+                  <a class="dropdown-item" href="/pagePrincipal/ventas"
+                    >Venta</a
+                  >
+                </li>
                 <li><a class="dropdown-item" href="#">Another action</a></li>
                 <li>
                   <a class="dropdown-item" href="#">Something else here</a>

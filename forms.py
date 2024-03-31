@@ -1,7 +1,14 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, validators,ValidationError,IntegerField,DateTimeLocalField,SelectField
-from wtforms.validators import DataRequired, Length, NumberRange, Optional,Regexp
+from wtforms import StringField, PasswordField, validators,ValidationError,IntegerField,DateTimeLocalField,SelectField,BooleanField
+from wtforms.validators import DataRequired, Length, NumberRange, Optional,Regexp,Email
 import re
+import bleach
+
+def no_xss(form, field):
+    cleaned = bleach.clean(field.data, strip=True)
+    if cleaned != field.data:
+        raise validators.ValidationError('Entrada inválida: se detectó contenido potencialmente peligroso.')
+
 
 def no_sql_injection(form, field):
     sql_patterns = [
@@ -23,12 +30,14 @@ class UsersForm(FlaskForm):
     username = StringField('Usuario', [
         validators.DataRequired(message='El campo es requerido'),
         validators.Length(min=4, max=25, message='Ingresa un usuario válido'),
-        no_sql_injection
+        no_sql_injection,
+        no_xss 
     ])
     password = PasswordField('Contraseña', [
         validators.DataRequired(message='El campo es requerido'),
         validators.Length(min=4, max=12, message='Ingresa una contraseña válida'),
-        no_sql_injection
+        no_sql_injection,
+        no_xss 
     ])
 
 class UserFormReg(FlaskForm):
@@ -54,3 +63,20 @@ class UserFormReg(FlaskForm):
             message='La contraseña debe incluir al menos una mayúscula, una minúscula, un número y un carácter especial.'
         )
         ])
+
+class ProveedorFormReg(FlaskForm):
+    id_proveedor = IntegerField('ID Proveedor')
+    nombre = StringField('Nombre del proveedor', validators=[DataRequired(message='El campo es requerido'), Length(max=50)])
+    telefono = IntegerField('Teléfono',validators=[DataRequired(message='El campo es requerido')] )
+    correo = StringField('Correo', validators=[Email(message='Correo inválido'), Length(max=50)])
+    dias_visita = StringField('Días de Visita', validators=[DataRequired(message='El campo es requerido'), Length(max=50)])
+    estatus = IntegerField('Estatus') 
+    usuario_registro = IntegerField('Usuario Registro', validators=[Optional()])
+    fecha_registro = DateTimeLocalField('Fecha de Registro')
+    lunes=BooleanField('Lunes')
+    martes=BooleanField('Martes')
+    miercoles=BooleanField('Miercoles')
+    jueves=BooleanField('Jueves')
+    viernes=BooleanField('Viernes')
+    
+    
