@@ -15,7 +15,7 @@ class UsersForm(Form):
         validators.EqualTo('confirm_password', message='Las contraseñas deben coincidir')
     ])
     confirm_password = PasswordField('Confirm Password', [
-        validators.DataRequired(message='El campo es requerido')
+        validators.DataRequired(message='El campo es requerido jjjddd')
     ])
 
     
