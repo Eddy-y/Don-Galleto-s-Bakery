@@ -77,3 +77,11 @@
 .custom-table2 tbody tr:nth-child(even) {
     background-color: #f2f2f2;
 }
+
+/* Estilo para el botón deshabilitado */
+.custom-buttongreen:disabled {
+    background-color: #ccc; /* Color de fondo gris */
+    color: #666; /* Color del texto gris */
+    cursor: not-allowed; /* Cursor no permitido */
+    pointer-events: none; /* No responder a eventos de puntero */
+}

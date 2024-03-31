@@ -18,10 +18,10 @@ csrf=CSRFProtect()
 #CORS(app, resources={r"/*": {"origins": ""}})
 
 #DESBLOQUEAR TODOS LOS ORIGENES
-#CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # DESBLOQUEAR CIERTOS ORIGENES
-CORS(app, resources={r"/*": {"origins": ["http://127.0.0.1:5000"]}})
+#CORS(app, resources={r"/*": {"origins": ["http://127.0.0.1:5000"]}})
 #CORS(app, resources={r"/*": {"origins": ["http://192.168.111.246.*", "http://192.168.111.86:8080","http://192.168.111.127.*"]}})
 
 mysql = MySQL(app)
@@ -183,7 +183,6 @@ def dashboard():
     caducidadesINV = getCaducidades()
     cardData = getCards()
 
-    print(cardData)
 
     for item in cardData:
         caducidades = item['Caducidades']
@@ -197,15 +196,13 @@ def dashboard():
 def get_ventasPr():
     # Get the week number from the request parameters
     week_number = request.args.get('week_number')
-    # print(week_number)
 
     # Prepare the SQL query to filter by week and sum quantities
     query = """
         SELECT paquete.nombre_paq as nombre, sum(ventaitem.cantidad) as cantidad, month(ventaitem.fecha_registro) as mes 
 	    FROM ventaitem
         JOIN venta ON venta.id_venta = ventaitem.ventaid_itm
-        JOIN paqueteitem ON ventaitem.paqueteid_itm = paqueteitem.id_paqueteitem
-        join paquete on paqueteitem.paqueteid_itm = paquete.id_paquete
+        join paquete on ventaitem.paqueteid_itm = paquete.id_paquete
         WHERE month(ventaitem.fecha_registro) = %s
         GROUP BY venta.fecha_venta, paquete.nombre_paq;
     """
@@ -215,7 +212,6 @@ def get_ventasPr():
     cur.execute(query, (week_number,))
     data = cur.fetchall()
     cur.close()
-    # print(data)
 
     return jsonify(data)
 
@@ -231,7 +227,6 @@ def getVentasAnio():
     cur.execute(query)
     data = cur.fetchall()
     cur.close()
-    # print(data)
 
     return jsonify(data)
 
@@ -244,36 +239,34 @@ def getVentasAnio():
             total_ventas AS Total_Venta
         FROM venta
         ORDER BY fecha_registro DESC
-        LIMIT 9;
+        LIMIT 6;
     """
     # Ejecutar la consulta
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cur.execute(query)
     data = cur.fetchall()
     cur.close()
-    # print(data)
     return data
 
 def getCaducidades():
     query = """
     SELECT 
     inv.fecha_caducidad AS caducidadInventario,
-    COALESCE(p.nombre_receta, m.nombre_mat) AS nombre,
+    COALESCE(p.nombre_producto, m.nombre_mat) AS nombre,
     inv.id_inventario AS idInventario
     FROM 
     inventario inv 
-    JOIN 
+    left JOIN 
     material m ON inv.material_inv = m.id_material 
-    JOIN 
-    receta p ON inv.producto_inv = p.id_receta
-    ORDER BY inv.fecha_caducidad ASC;
+    left JOIN 
+    producto p ON inv.producto_inv = p.id_producto
+    ORDER BY inv.fecha_caducidad ASC limit 6;
     """
     # Ejecutar la consulta
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cur.execute(query)
     data = cur.fetchall()
     cur.close()
-    # print(data)
     return data
 
 def getCards():
@@ -318,30 +311,94 @@ def getCards():
     return data
 
 def getProduccion():
-    query = """  SELECT p.folio_produccion as folio, pi.cantidad as cantidad, pi.costo as costo, paq.nombre_paq as nombrePaquete, paq.costopaquete_paq as costoPaquete, p.fecha_inicio as fechaInicio
-    FROM produccion p JOIN produccionitem pi ON p.id_produccion = pi.produccion_itm JOIN paqueteitem paqIt ON paqIt.id_paqueteitem = pi.id_paqueteitem join paquete paq on paqIt.paqueteid_itm = paq.id_paquete
-    WHERE p.fecha_fin IS NULL AND p.fecha_inicio IS NOT NULL;"""
+    query = """  SELECT prod.nombre_producto as nombre, pi.costo as costo, pi.costo as costo, p.fecha_inicio as fechaInicio, coalesce(p.fecha_fin, 'En espera') as fechaFin, 
+    CASE 
+        WHEN p.fecha_fin IS NULL THEN 0 
+        ELSE 1 
+    END AS estado_fecha
+    FROM produccion p JOIN produccionitem pi ON p.id_produccionitem = pi.id_produccionitem
+    join producto prod on prod.id_producto = pi.productoid_itm
+    WHERE p.fecha_inicio IS NOT NULL order by  p.fecha_inicio asc limit 6;"""
     # Ejecutar la consulta
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cur.execute(query)
     data = cur.fetchall()
     cur.close()
-    # print(data)
     return data
 # '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
 # ''''''''''''''''''''''''''PRODUCCION'''''''''''''''''''''''''''''''''''''''
+
 @app.route('/produccion')
 def produccion():
+    productos = getProductos()
+    return render_template("Produccion/produccion.html", productos=productos)
 
-    
+def getProductos():
+    query = """
+    select inv.id_inventario as idInv, p.id_producto as idPro, p.nombre_producto as nombre, inv.cantidad_inv as cantidad
+    from inventario inv join producto p on inv.producto_inv = p.id_producto;
+    """
+    # Ejecutar la consulta
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cur.execute(query)
+    data = cur.fetchall()
+    cur.close()
+    return data
 
+@app.route('/agregarProduccion', methods=['GET'])
+def agregarProduccion():
+    idProducto = int(request.args.get('idProducto'))
 
-    return render_template("Produccion/produccion.html")
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cur.callproc('agregarProduccion', (idProducto,))
+    # cur.execute("CALL agregarProduccion(%s)", (idProducto))
+    mysql.connection.commit()
+    cur.close()
+    return {'response':'success'}
 
-@app.route('/produccionGalleta')
+@app.route('/produccionGalleta', methods=['GET'])
 def produccionGalleta():
-    return render_template("Produccion/producirGalleta.html")
+    query = """
+    SELECT 
+        pi.id_produccionitem as idProduccionitem, prod.id_producto as idProducto, prod.nombre_producto as nombre,
+        GROUP_CONCAT(m.nombre_mat SEPARATOR ' | ') AS materiales, min(floor(inv.cantidad_inv/ri.cantidad)) as cuantas
+    FROM 
+        produccionitem pi
+        JOIN produccion p ON p.id_produccionitem = pi.id_produccionitem
+        JOIN producto prod ON prod.id_producto = pi.productoid_itm
+        JOIN recetaitem ri ON ri.productoid_itm = prod.id_producto
+        JOIN material m ON m.id_material = ri.materialid_itm
+        join inventario inv on inv.material_inv = m.id_material
+    where p.fecha_fin is null
+    GROUP BY 
+        pi.id_produccionitem;
+    """
+    # Ejecutar la consulta
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cur.execute(query)
+    data = cur.fetchall()
+    cur.close()
 
+    return render_template("Produccion/producirGalleta.html", recetas = data)
+
+
+@app.route('/descontarProduccion', methods=['GET'])
+def descontarProduccion():
+
+    idProducto = request.args.get('idProducto')
+    cantidad = request.args.get('cantidad')
+    idProduccionitem = request.args.get('idProduccionitem')
+    #print('producto: ', idProducto, ' cantidad: ', cantidad, ' produccionitem: ', idProduccionitem)
+    # Preparar el nombre del procedimiento almacenado y los parámetros
+
+    # Llamar al procedimiento almacenado
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cur.callproc('descontarProduccion', (idProducto, cantidad,idProduccionitem))
+    mysql.connection.commit()
+    # Obtener los resultados del procedimiento almacenado
+    cur.close()
+    return {'response':'success'}
 # '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 if __name__ == "__main__":

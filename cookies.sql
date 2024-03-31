@@ -298,7 +298,8 @@ VALUES ('Producto 1', 'P1', 30, 'unidad', 10.50, 1, 1, NOW()),
        ('Producto 2', 'P2', 60, 'unidad', 20.75, 1, 1, NOW());
 
 -- Inserts for ventaitem table
-INSERT INTO ventaitem (venta_itm, producto_itm, cantidad, subtotal, descuento, total, estatus, usuario_registro, fecha_registro)
+DESC ventaitem;
+INSERT INTO ventaitem (ventaid_itm, paqueteid_itm, cantidad, subtotal, descuento, total, estatus, usuario_registro, fecha_registro)
 VALUES (1, 1, 2, 21.00, 0, 21.00, 1, 1, NOW()),
        (1, 2, 3, 62.25, 0, 62.25, 1, 1, NOW()),
        (2, 1, 1, 10.50, 0, 10.50, 1, 1, NOW()),

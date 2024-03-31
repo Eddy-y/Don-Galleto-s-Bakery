@@ -111,7 +111,7 @@
         <!-- New Customers -->
         <div class="recentCustomers">
             <div class="cardHeader">
-                <h2>Caducidades Productos</h2>
+                <h2>Caducidades Inventario</h2>
             </div>
             <table>
                 {% for cad in caducidadesINV %}
@@ -134,24 +134,24 @@
             <table>
                 <thead>
                     <tr>
-                        <td>Folio Produccion</td>
-                        <td>Cantidad Produccion</td>
-                        <td>Costo Produccion</td>
                         <td>Nombre Producto</td>
                         <td>Costo Producto</td>
                         <td>Fecha de inicio de produccion</td>
+                        <td>Fecha de fin de produccion</td>
                     </tr>
                 </thead>
                 <tbody>
                     {% for pro in produccion %}
-                    <tr>
-                        <td>{{ pro.folio }}</td>
-                        <td>{{ pro.cantidad }}</td>
-                        <td>{{ pro.costo }}</td>
-                        <td>{{ pro.nombrePaquete }}</td>
-                        <td>{{ pro.costoPaquete }}</td>
-                        <td>{{ pro.fechaInicio }}</td>
-                    </tr>
+                        {% set color = '#DDFFC7' %}
+                        {% if pro.estado_fecha == 0 %}
+                            {% set color = '#FFCFC7' %}
+                        {% endif %}
+                        <tr style="background-color: {{ color }};">
+                            <td>{{ pro.nombre }}</td>
+                            <td>{{ pro.costo }}</td>
+                            <td>{{ pro.fechaInicio }}</td>
+                            <td>{{ pro.fechaFin }}</td>
+                        </tr>
                     {% endfor %}
                 </tbody>
             </table>
@@ -164,28 +164,4 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
 <script src="../static/js/my_chart.js"></script>
 
-<script>
-
-    //Menu toggle (alternar)
-    let toggle = document.querySelector('.toggle');
-    let navigation = document.querySelector('.navigation');
-    let main = document.querySelector('.main');
-
-    toggle.onclick = function()
-    {
-        navigation.classList.toggle('active');
-        main.classList.toggle('active');
-    }
-
-    //agregar clase hovered en el elemento de lista seleccionado
-    let list = document.querySelectorAll('.navigation li');
-    function activeLink(){
-        list.forEach((item) =>
-        item.classList.remove('hovered'));
-        this.classList.add('hovered')
-    }
-    list.forEach((item)=>
-    item.addEventListener('mouseover',activeLink));
-
-</script> 
 {% endblock %}

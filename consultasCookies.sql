@@ -2,18 +2,6 @@ use cookiesInc;
 
 show tables;
         
-select month('2024-03-24 21:33:23');
-select * from venta;
-select * from ventaitem;
-SELECT count(*) FROM producto where dias_caducidad < 20;
-SELECT count(*) as cantidadVentas, sum(total_ventas) as total FROM venta;
-
-SELECT p.folio_produccion as folio, pi.cantidad as cantidad, pi.costo as costo, paq.nombre_paq as nombrePaquete, paq.costopaquete_paq as costoPaquete, p.fecha_inicio as fechaInicio
-    FROM produccion p JOIN produccionitem pi ON p.id_produccion = pi.produccion_itm JOIN paqueteitem paqIt ON paqIt.id_paqueteitem = pi.id_paqueteitem join paquete paq on paqIt.paqueteid_itm = paq.id_paquete
-    WHERE p.fecha_fin IS NULL AND p.fecha_inicio IS NOT NULL;
-    
-SELECT p.folio_produccion as folio, p.cantidad_total as cantidad, p.costo_total as costo FROM produccion p
-    WHERE p.fecha_fin IS NULL AND p.fecha_inicio IS NOT NULL;
 
 desc produccion;
 desc produccionitem;
@@ -22,21 +10,67 @@ desc paqueteItem;
 
 select * from produccion;
 select * from receta;
-select * from inventario;
+
 select * from material;
 
 desc inventario;
+desc producto;
 show tables;
 
-SELECT p.nombre_paq AS productoVendido, COUNT(vi.id_ventaitem) AS cantidad_ventas 
-    FROM ventaitem vi 
-    JOIN paqueteitem pi ON vi.paqueteid_itm = pi.id_paqueteitem
-    join paquete p on p.id_paquete = pi.paqueteid_itm
-    GROUP BY p.nombre_paq
-    ORDER BY cantidad_ventas DESC LIMIT 1; 
+select * from paquete;
+select * from paqueteitem;
+select * from ventaitem;
+select * from venta;
+select * from inventario;
+select * from producto;
+select * from recetaitem;
+select * from material; -- del mat 5 necesito 360
+    
+    
+select m.id_material, m.nombre_mat as material, inv.cantidad_inv as tenemos, ri.cantidad as necesarias
+from produccionitem pi
+JOIN produccion p ON p.id_produccionitem = pi.id_produccionitem
+JOIN producto prod ON prod.id_producto = pi.productoid_itm
+JOIN recetaitem ri ON ri.productoid_itm = prod.id_producto
+JOIN material m ON m.id_material = ri.materialid_itm
+join inventario inv on inv.material_inv = m.id_material
+where pi.id_produccionitem = 10;
 
+UPDATE inventario
+set cantidad_inv = cantidad_inv + 2000
+where material_inv = 6;
 
-SELECT COUNT(*) AS cuenta 
-FROM inventario 
-WHERE DATEDIFF(fecha_caducidad, CURDATE()) <= 20;
-
+select * from material;
+select * from inventario;
+select * from produccion;
+select * from produccionitem;
+select * from producto;
+select * from recetaitem;
+    
+SELECT prod.nombre_producto as nombre, pi.costo as costo, pi.costo as costo, p.fecha_inicio as fechaInicio, coalesce(p.fecha_fin, 'En espera') as fechaFin, 
+    CASE 
+        WHEN p.fecha_fin IS NULL THEN 0 
+        ELSE 1 
+    END AS estado_fecha
+    FROM produccion p JOIN produccionitem pi ON p.id_produccionitem = pi.id_produccionitem
+    join producto prod on prod.id_producto = pi.productoid_itm
+    WHERE p.fecha_inicio IS NOT NULL order by  p.fecha_inicio asc limit 6;
+    
+    
+	
+    
+    
+    
+    
+    
+    
+SELECT
+    TABLE_NAME,
+    COLUMN_NAME,
+    CONSTRAINT_NAME,
+    REFERENCED_TABLE_NAME,
+    REFERENCED_COLUMN_NAME
+FROM
+    INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+WHERE
+    TABLE_NAME = 'produccion';
