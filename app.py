@@ -183,44 +183,66 @@ def dashboard():
     caducidadesINV = getCaducidades()
     cardData = getCards()
 
-
     for item in cardData:
         caducidades = item['Caducidades']
         cantidadVentas = item['cantidadVentas']
         totalVentas = item['totalVentas']
         productoVendido = item['productoVendido']
 
-    return render_template("Dashboard/dashboard.html",produccion=produccion, ventas = ventas, caducidadesINV=caducidadesINV,productoVendido=productoVendido, caducidades=caducidades, cantidadVentas = cantidadVentas, totalVentas=totalVentas)
+    #----- CHARTS ------
+    ventasAnio = getVentasAnio2()
+    ventasPr = get_ventasPr()
 
-@app.route('/get_ventasPr', methods=['GET'])
+    return render_template("Dashboard/dashboard.html",ventasPr=ventasPr, ventasAnio=ventasAnio,produccion=produccion, ventas = ventas, caducidadesINV=caducidadesINV,productoVendido=productoVendido, caducidades=caducidades, cantidadVentas = cantidadVentas, totalVentas=totalVentas)
+
 def get_ventasPr():
-    # Get the week number from the request parameters
-    week_number = request.args.get('week_number')
 
     # Prepare the SQL query to filter by week and sum quantities
     query = """
-        SELECT paquete.nombre_paq as nombre, sum(ventaitem.cantidad) as cantidad, month(ventaitem.fecha_registro) as mes 
+        SELECT paquete.nombre_paq as nombre, sum(ventaitem.cantidad) as cantidad, month(venta.fecha_venta) as mes 
 	    FROM ventaitem
         JOIN venta ON venta.id_venta = ventaitem.ventaid_itm
         join paquete on ventaitem.paqueteid_itm = paquete.id_paquete
-        WHERE month(ventaitem.fecha_registro) = %s
-        GROUP BY venta.fecha_venta, paquete.nombre_paq;
+        GROUP BY month(venta.fecha_venta), paquete.nombre_paq;
     """
 
     # Execute the query with the week number parameter
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cur.execute(query, (week_number,))
+    cur.execute(query)
     data = cur.fetchall()
     cur.close()
 
-    return jsonify(data)
+    # Estructura para almacenar los resultados por mes
+    resultados_por_mes = {}
 
-@app.route('/getVentasAnio', methods=['GET'])
-def getVentasAnio():
+    # Iterar sobre los resultados y almacenarlos en la estructura
+    for row in data:
+        mes = row['mes']
+        if mes not in resultados_por_mes:
+            resultados_por_mes[mes] = []
+        resultados_por_mes[mes].append(row)
+
+    return resultados_por_mes
+
+def getVentasAnio2():
     query = """
-        SELECT sum(ventaitem.cantidad) as cantidad, month(ventaitem.fecha_registro) as mes
-        FROM ventaitem
-        GROUP BY month(ventaitem.fecha_registro);
+        SELECT COALESCE(SUM(ventaitem.cantidad), 0) AS cantidad, months.mes
+        FROM (
+            SELECT 1 AS mes
+            UNION SELECT 2 AS mes
+            UNION SELECT 3 AS mes
+            UNION SELECT 4 AS mes
+            UNION SELECT 5 AS mes
+            UNION SELECT 6 AS mes
+            UNION SELECT 7 AS mes
+            UNION SELECT 8 AS mes
+            UNION SELECT 9 AS mes
+            UNION SELECT 10 AS mes
+            UNION SELECT 11 AS mes
+            UNION SELECT 12 AS mes
+        ) AS months
+        LEFT JOIN ventaitem ON MONTH(ventaitem.fecha_registro) = months.mes
+        GROUP BY months.mes;
     """
     # Ejecutar la consulta
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -228,7 +250,11 @@ def getVentasAnio():
     data = cur.fetchall()
     cur.close()
 
-    return jsonify(data)
+    # Format the data as list of dictionaries
+    formatted_data = [{'cantidad': row['cantidad'], 'mes': row['mes']} for row in data]
+
+    # Return JSON response
+    return formatted_data
 
 def getVentasAnio():
     query = """

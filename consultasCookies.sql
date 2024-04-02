@@ -65,6 +65,19 @@ SELECT prod.nombre_producto as nombre, pi.costo as costo, pi.costo as costo, p.f
     select pi.productoid_itm from produccionitem pi join produccion p ON p.id_produccionitem = pi.id_produccionitem where p.fecha_fin is null;
 	
     
+    
+    SELECT sum(ventaitem.cantidad) as cantidad, month(ventaitem.fecha_registro) as mes
+        FROM ventaitem
+        GROUP BY month(ventaitem.fecha_registro);
+    
+SELECT paquete.nombre_paq as nombre, sum(ventaitem.cantidad) as cantidad, month(ventaitem.fecha_registro) as mes 
+	    FROM ventaitem
+        JOIN venta ON venta.id_venta = ventaitem.ventaid_itm
+        join paquete on ventaitem.paqueteid_itm = paquete.id_paquete
+        GROUP BY venta.fecha_venta, paquete.nombre_paq;
+    
+    
+    
 SELECT
     TABLE_NAME,
     COLUMN_NAME,

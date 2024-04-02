@@ -1,3 +1,6 @@
+
+
+
 var ctx = document.getElementById('myChart').getContext('2d');
 var earning = document.getElementById('earning').getContext('2d');
 
@@ -43,13 +46,18 @@ var myChart = new Chart(ctx, {
     }
 });
 
+
+var ventasAnioData = {{ ventasAnio | tojson | safe }};
 var earning = new Chart(earning, {
     type: 'line',
     data: {
-        labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+        labels: Object.keys(ventasAnioData), // Use the keys as labels
         datasets: [{
             label: 'Distribucion de ventas',
             backgroundColor: allColors,
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 1,
+            data: Object.values(ventasAnioData) // Use the values as data points
         }]
     },
     options: {
@@ -82,35 +90,11 @@ function productChart() {
         .catch(error => console.error('Error:', error));
 }
 
-function getVentasAnio() {
-    fetch('/getVentasAnio')
-        .then(response => response.json())
-        .then(data => {
-            // Create an array to hold the data for each month
-            const chartData = new Array(12).fill(0);
-
-            // Update the data array with the quantity for each month
-            data.forEach(item => {
-                const monthIndex = parseInt(item.mes) - 1; // Months are 1-indexed in SQL
-                chartData[monthIndex] = item.cantidad;
-            });
-
-            // Update myChart object with new data
-            earning.data.datasets[0].data = chartData;
-
-            // Update the chart
-            earning.update();
-            console.log(data);
-        })
-        .catch(error => console.error('Error:', error));
-}
 
 // ------------------------------------------------------------------------------------------
 // Execute createCharts function when the DOM content is loaded
 document.addEventListener('DOMContentLoaded', function () {
     productChart();
-    getVentasAnio();
-    getProduccion();
 });
 
 document.getElementById('monthSelect').addEventListener('change', productChart);
