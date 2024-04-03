@@ -8,8 +8,9 @@
     </div>
 </div>
 <div class="row">
-    <form action="/produccionGalleta" method="get">
+    <form id="produccionForm" action="/produccion" method="post">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" id="idProHidden" name="idPro" value="">
         <table class="table table-bordered table-striped custom-table">
             <thead class="text-dark">
                 <tr>
@@ -42,6 +43,17 @@
 </div>
 
 
-<script src="../static/js/produccion.js"></script>
+<!-- <script src="../static/js/produccion.js"></script> -->
+
+<script>
+    function solicitarProduccion(idButton, idProducto) {
+        //Desactivar el boton
+        document.getElementById(idButton).disabled = true
+
+        document.getElementById('idProHidden').value = idProducto; // Establecer el valor del campo oculto con idPro
+        document.getElementById('produccionForm').submit(); // Enviar el formulario
+    }
+
+</script>
 
 {%endblock%}

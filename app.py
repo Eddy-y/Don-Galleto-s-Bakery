@@ -355,8 +355,12 @@ def getProduccion():
 
 # ''''''''''''''''''''''''''PRODUCCION'''''''''''''''''''''''''''''''''''''''
 
-@app.route('/produccion')
+@app.route('/produccion', methods=['GET','POST'])
 def produccion():
+    if request.method == 'POST':
+        idPro = request.form.get('idPro')  # Obtener el idPro enviado en la solicitud POST
+        agregarProduccion(idPro)
+    
     productos = getProductos()
     return render_template("Produccion/produccion.html", productos=productos)
 
@@ -374,10 +378,7 @@ def getProductos():
     cur.close()
     return data
 
-@app.route('/agregarProduccion', methods=['GET'])
-def agregarProduccion():
-    idProducto = int(request.args.get('idProducto'))
-
+def agregarProduccion(idProducto):
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cur.callproc('agregarProduccion', (idProducto,))
     # cur.execute("CALL agregarProduccion(%s)", (idProducto))
@@ -385,8 +386,18 @@ def agregarProduccion():
     cur.close()
     return {'response':'success'}
 
-@app.route('/produccionGalleta', methods=['GET'])
+
+@app.route('/produccionGalleta', methods=['GET','POST'])
 def produccionGalleta():
+    if request.method == 'POST':
+        idProducto = request.form.get('idProducto')
+        counter = str(request.form.get('counter'))
+        cantidad = request.form.get('cuantas_'+counter)
+        idProduccionitem = request.form.get('idProduccionitem')
+
+        # print('idp: ', idProducto,'counter: ',counter,'cant: ',cantidad, 'idpi: ', idProduccionitem)
+        descontarProduccion(idProducto,cantidad,idProduccionitem)
+    
     query = """
     SELECT 
         pi.id_produccionitem as idProduccionitem, prod.id_producto as idProducto, prod.nombre_producto as nombre,
@@ -410,13 +421,7 @@ def produccionGalleta():
 
     return render_template("Produccion/producirGalleta.html", recetas = data)
 
-
-@app.route('/descontarProduccion', methods=['GET'])
-def descontarProduccion():
-
-    idProducto = request.args.get('idProducto')
-    cantidad = request.args.get('cantidad')
-    idProduccionitem = request.args.get('idProduccionitem')
+def descontarProduccion(idProducto,cantidad,idProduccionitem):
     #print('producto: ', idProducto, ' cantidad: ', cantidad, ' produccionitem: ', idProduccionitem)
     # Preparar el nombre del procedimiento almacenado y los parámetros
 
@@ -427,6 +432,8 @@ def descontarProduccion():
     # Obtener los resultados del procedimiento almacenado
     cur.close()
     return {'response':'success'}
+
+
 # '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 if __name__ == "__main__":
